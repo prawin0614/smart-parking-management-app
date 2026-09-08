@@ -178,11 +178,11 @@ class ParkingServer(BaseHTTPRequestHandler):
 
 
 server = HTTPServer(
-    ("localhost", 8000),
+    ("127.0.0.1", 8000),
     ParkingServer
 )
 
-print("Parking server running on http://localhost:8000")
+print("Parking server running on http://127.0.0.1:8000")
 
 if __name__ == "__main__":
     server.serve_forever()

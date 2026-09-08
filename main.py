@@ -3,6 +3,6 @@ from server import server
 
 if __name__ == "__main__":
     print("Smart Parking Management System")
-    print("Server running at http://localhost:8000")
+    print("Server running at http://127.0.0.1:8000")
 
     server.serve_forever()

@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000";
+const API_URL = "http://127.0.0.1:8000";
 
 
 // =========================================================
@@ -19,11 +19,13 @@ async function loadSlots() {
 
         const response = await fetch(`${API_URL}/slots`);
 
+        const result = await response.json();
+
         if (!response.ok) {
-            throw new Error("Failed to load parking slots");
+            throw new Error(result.message || "Failed to load parking slots");
         }
 
-        const slots = await response.json();
+        const slots = result;
 
         displaySlots(slots);
         updateStatistics(slots);
@@ -34,8 +36,7 @@ async function loadSlots() {
 
         container.innerHTML = `
             <div class="error-message">
-                Unable to connect to the parking server.
-                Make sure your Python backend is running.
+                Unable to load parking slots: ${error.message}
             </div>
         `;
     }
