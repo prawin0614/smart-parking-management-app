@@ -1,5 +1,8 @@
 import json
+import mimetypes
+from pathlib import Path
 from http.server import HTTPServer, BaseHTTPRequestHandler
+from urllib.parse import urlparse
 
 from slot_service import (
     add_slot,
@@ -8,20 +11,35 @@ from slot_service import (
     delete_slot
 )
 
+FRONTEND_DIR = Path(__file__).resolve().parent / "frontend"
+
 
 class ParkingServer(BaseHTTPRequestHandler):
 
     def send_json(self, status_code, data):
 
+        response = json.dumps(data).encode()
+
         self.send_response(status_code)
         self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(response)))
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
 
-        response = json.dumps(data)
-        self.wfile.write(response.encode())
+        self.wfile.write(response)
+
+    def send_file(self, file_path):
+
+        content = file_path.read_bytes()
+        content_type = mimetypes.guess_type(file_path.name)[0] or "application/octet-stream"
+
+        self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(content)))
+        self.end_headers()
+        self.wfile.write(content)
 
     def do_OPTIONS(self):
 
@@ -45,7 +63,9 @@ class ParkingServer(BaseHTTPRequestHandler):
 
     def do_GET(self):
 
-        if self.path == "/slots":
+        request_path = urlparse(self.path).path
+
+        if request_path == "/slots":
 
             try:
                 slots = get_all_slots()
@@ -58,6 +78,19 @@ class ParkingServer(BaseHTTPRequestHandler):
                 return
 
             self.send_json(200, slots)
+            return
+
+        static_path = {
+            "/": "index.html",
+            "/index.html": "index.html",
+            "/style.css": "style.css",
+            "/script.js": "script.js"
+        }.get(request_path)
+
+        if static_path:
+            file_path = FRONTEND_DIR / static_path
+            self.send_file(file_path)
+            return
 
         else:
 
@@ -71,7 +104,7 @@ class ParkingServer(BaseHTTPRequestHandler):
 
     def do_POST(self):
 
-        if self.path == "/slots":
+        if urlparse(self.path).path == "/slots":
 
             try:
 
@@ -105,12 +138,14 @@ class ParkingServer(BaseHTTPRequestHandler):
 
     def do_PUT(self):
 
-        if self.path.startswith("/slots/"):
+        request_path = urlparse(self.path).path
+
+        if request_path.startswith("/slots/"):
 
             try:
 
                 slot_id = int(
-                    self.path.split("/")[-1]
+                    request_path.split("/")[-1]
                 )
 
                 data = self.read_json()
@@ -151,12 +186,14 @@ class ParkingServer(BaseHTTPRequestHandler):
 
     def do_DELETE(self):
 
-        if self.path.startswith("/slots/"):
+        request_path = urlparse(self.path).path
+
+        if request_path.startswith("/slots/"):
 
             try:
 
                 slot_id = int(
-                    self.path.split("/")[-1]
+                    request_path.split("/")[-1]
                 )
 
                 result = delete_slot(slot_id)
@@ -177,12 +214,5 @@ class ParkingServer(BaseHTTPRequestHandler):
             })
 
 
-server = HTTPServer(
-    ("127.0.0.1", 8000),
-    ParkingServer
-)
-
-print("Parking server running on http://127.0.0.1:8000")
-
-if __name__ == "__main__":
-    server.serve_forever()
+def create_server(host, port):
+    return HTTPServer((host, port), ParkingServer)

@@ -1,11 +1,12 @@
 import mysql.connector
+import os
 
 
 def get_connection():
     return mysql.connector.connect(
-        host="smart-parking-mysql-prawin2026.mysql.database.azure.com",
-        user="parkingadmin",
-        password="praWin@06",
-        database="parking_db",
-        port=3306
+        host=os.environ["DB_HOST"],
+        user=os.environ["DB_USER"],
+        password=os.environ["DB_PASSWORD"],
+        database=os.environ.get("DB_NAME", "parking_db"),
+        port=int(os.environ.get("DB_PORT", "3306"))
     )
