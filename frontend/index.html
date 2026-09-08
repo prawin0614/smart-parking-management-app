@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Parking Management</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="navbar">
+        <div class="logo">
+            Smart<span>Parking</span>
+        </div>
+
+        <nav>
+            <a href="#" class="active">Dashboard</a>
+            <a href="#slots">Parking Slots</a>
+        </nav>
+    </header>
+
+
+    <main>
+
+        <section class="hero">
+            <div>
+                <h1>Smart Parking Management</h1>
+                <p>Manage parking slots quickly and efficiently.</p>
+            </div>
+
+            <button class="add-btn" onclick="openModal()">
+                + Add Parking Slot
+            </button>
+        </section>
+
+
+        <!-- Statistics -->
+
+        <section class="stats">
+
+            <div class="stat-card">
+                <div class="stat-icon">P</div>
+                <div>
+                    <p>Total Slots</p>
+                    <h2 id="totalSlots">0</h2>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon available">A</div>
+                <div>
+                    <p>Available</p>
+                    <h2 id="availableSlots">0</h2>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon occupied">O</div>
+                <div>
+                    <p>Occupied</p>
+                    <h2 id="occupiedSlots">0</h2>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- Parking Slots -->
+
+        <section id="slots" class="parking-section">
+
+            <div class="section-header">
+                <div>
+                    <h2>Parking Slots</h2>
+                    <p>Monitor and manage your parking spaces.</p>
+                </div>
+
+                <button onclick="loadSlots()" class="refresh-btn">
+                    Refresh
+                </button>
+            </div>
+
+            <div id="slotContainer" class="slot-grid">
+                <!-- Slots will be loaded here -->
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Add Slot Modal -->
+
+    <div id="modal" class="modal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h2>Add Parking Slot</h2>
+
+                <button onclick="closeModal()" class="close-btn">
+                    ×
+                </button>
+            </div>
+
+            <form id="slotForm">
+
+                <label>Slot Number</label>
+
+                <input
+                    type="text"
+                    id="slotNumber"
+                    placeholder="Example: A01"
+                    required
+                >
+
+
+                <label>Vehicle Type</label>
+
+                <select id="vehicleType" required>
+
+                    <option value="">Select vehicle type</option>
+                    <option value="CAR">Car</option>
+                    <option value="BIKE">Bike</option>
+                    <option value="SUV">SUV</option>
+                    <option value="TRUCK">Truck</option>
+
+                </select>
+
+
+                <button type="submit" class="submit-btn">
+                    Add Slot
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>
